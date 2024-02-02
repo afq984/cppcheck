@@ -310,7 +310,7 @@ bool CmdLineParser::fillSettingsFromArgs(int argc, const char* const argv[])
 // TODO: error out on all missing given files/paths
 CmdLineParser::Result CmdLineParser::parseFromArgs(int argc, const char* const argv[])
 {
-    mSettings.exename = Path::getCurrentExecutablePath(argv[0]);
+      mSettings.exename = argv[0];
 
     if (argc <= 1) {
         printHelp();
