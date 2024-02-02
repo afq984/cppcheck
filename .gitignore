@@ -129,3 +129,5 @@ compile_commands.json
 
 #vs code
 /.vscode
+
+/bazel-*

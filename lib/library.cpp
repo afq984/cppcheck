@@ -30,6 +30,7 @@
 #include "vfvalue.h"
 
 #include <algorithm>
+#include <iostream>
 #include <cctype>
 #include <climits>
 #include <cstring>
@@ -40,7 +41,10 @@
 #include <stdexcept>
 #include <string>
 
+#include "tools/cpp/runfiles/runfiles.h"
 #include "xml.h"
+
+using bazel::tools::cpp::runfiles::Runfiles;
 
 static std::vector<std::string> getnames(const char *names)
 {
@@ -83,6 +87,15 @@ Library::Error Library::load(const char exename[], const char path[])
         return Error();
     }
 
+
+    std::string runfiles_error;
+    std::unique_ptr<Runfiles> runfiles(Runfiles::Create(exename, &runfiles_error));
+    if (runfiles == nullptr) {
+        std::clog << runfiles_error << std::endl;
+        return Error();
+    }
+    std::string bazel_cfg = runfiles->Rlocation("cppcheck/cfg", "cppcheck");
+
     std::string absolute_path;
     // open file..
     tinyxml2::XMLDocument doc;
@@ -101,6 +114,7 @@ Library::Error Library::load(const char exename[], const char path[])
         }
 
         std::list<std::string> cfgfolders;
+        cfgfolders.emplace_back(bazel_cfg);
 #ifdef FILESDIR
         cfgfolders.emplace_back(FILESDIR "/cfg");
 #endif
